@@ -4,15 +4,16 @@ import { Fragment, useCallback, useState, useContext } from 'react';
 import { jsx } from '@emotion/react';
 
 import { token } from '@atlaskit/tokens';
+import { Box,xcss } from '@atlaskit/primitives';
 
 import {
-  Banner,
+
   Content,
-  LeftPanel,
+  
   LeftSidebarWithoutResize,
   Main,
   PageLayout,
-  RightPanel,
+
   RightSidebar,
   TopNavigation,
 } from '@atlaskit/page-layout';
@@ -23,11 +24,12 @@ import ScrollableContent from './design-system/page-layout/examples/common/scrol
 import SlotLabel from './design-system/page-layout/examples/common/slot-label.tsx';
 import SlotWrapper from './design-system/page-layout/examples/common/slot-wrapper.tsx';
 import Toggle from './design-system/page-layout/examples/common/toggle.tsx';
-import ToggleBox from './design-system/page-layout/examples/common/toggle-box.tsx';
-import toKebabCase from './design-system/page-layout/examples/common/to-kebab-case.tsx';
-import Navegacion from './design-system/page-layout/examples/common/Navegacion.tsx';
-import { StoreContext } from './store/StoreProvider.js';
 
+
+import { StoreContext } from './store/StoreProvider.js';
+import DefaultSearch from './design-system/search/Search.tsx';
+
+import ProyectList from './design-system/proyects/proyectList.js';
 type SlotName =
   | 'Banner'
   | 'TopNavigation'
@@ -58,6 +60,34 @@ const initialState = {
   isRightPanelFixed: false,
   isRightPanelScrollable: false,
 };
+
+const componentStyle = xcss({
+  marginTop:'space.1000',
+  display:'flex',
+  flexDirection:'column',
+  justifyContent:'center',
+  
+});
+
+const componentStyle2 = xcss({
+  display:'flex',
+  flexDirection:'row',
+  justifyContent:'center',
+  padding:'space.100',
+
+  
+});
+
+const boxRow = xcss({
+  display:'flex',
+  flexDirection:'row', 
+});
+
+const boxColumn = xcss({
+  display:'flex',
+  flexDirection:'column', 
+});
+
 
 const BasicGrid = () => {
   const [store,dispatch] = useContext(StoreContext)
@@ -102,48 +132,7 @@ const BasicGrid = () => {
     [gridState],
   );
 
-  const ToggleShown = useCallback(
-    ({ slotName }: { slotName: SlotName }) => {
-      const gridKey = `is${slotName}Shown` as keyof typeof gridState;
-      return (
-        <Toggle
-          id={`toggle-${toKebabCase(slotName)}`}
-          onChange={() =>
-            setGridState({ ...gridState, [gridKey]: !gridState[gridKey] })
-          }
-          isChecked={!gridState[gridKey]}
-        >{`${gridState[gridKey] ? 'Hide' : 'Show'} ${slotName}`}</Toggle>
-      );
-    },
-    [gridState],
-  );
 
-  const ToggleExtraWide = useCallback(
-    () => (
-      <Fragment>
-        <Toggle
-          id={`toggle--extra-wide`}
-          onChange={() =>
-            setGridState({
-              ...gridState,
-              isMainExtraWide: !gridState.isMainExtraWide,
-            })
-          }
-          isChecked={gridState.isMainExtraWide}
-        >
-          Toggle extra-wide content
-        </Toggle>
-        {gridState.isMainExtraWide && (
-          <img
-            src="https://picsum.photos/seed/picsum/1600"
-            alt="wide placeholder"
-            title="wide placeholder image"
-          />
-        )}
-      </Fragment>
-    ),
-    [gridState],
-  );
 
   return (
     <PageLayout>
@@ -175,12 +164,20 @@ const BasicGrid = () => {
         )}
         {gridState.isMainShown && (
           <Main testId="main" id="main" skipLinkTitle="Main Content">
-            <SlotWrapper borderColor={token('color.border', 'black')}>
-              <SlotLabel>Main</SlotLabel>
-              <ToggleExtraWide />
-              
-              <ToggleScrollable slotName="Main" />
-            </SlotWrapper>
+            <Box xcss={boxRow}>
+                <Box xcss={boxColumn}>
+                  <Box xcss={componentStyle}>
+                    <Box xcss={componentStyle2}>
+                      <h1>Proyectos Activos</h1>
+                      <DefaultSearch/>
+                    </Box>
+                    <div >
+                      <ProyectList></ProyectList>
+                    </div>
+                  </Box>
+                </Box>
+            </Box>
+            
           </Main>
         )}
         {gridState.isRightSidebarShown && (
@@ -201,16 +198,7 @@ const BasicGrid = () => {
           </RightSidebar>
         )}
       </Content>
-      
-      <ToggleBox>
-        <ToggleShown slotName="Banner" />
-        <ToggleShown slotName="TopNavigation" />
-        <ToggleShown slotName="LeftPanel" />
-        <ToggleShown slotName="LeftSidebar" />
-        <ToggleShown slotName="Main" />
-        <ToggleShown slotName="RightSidebar" />
-        <ToggleShown slotName="RightPanel" />
-      </ToggleBox>
+
     </PageLayout>
   );
 };
